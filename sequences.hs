@@ -48,20 +48,25 @@ derangement n
 derangementSeq :: [Integer]
 derangementSeq = [ derangement i | i <- [0..] ]
 
--- fix
 totient :: Integral a => a -> a
-totient n = n * product [ 1 - (1 `div` p) | p <- [2..n], n `mod` p == 0 ]
+totient n = n * a `quot` b
+  where a = product $ map (\x -> x-1) (filter isPrime (filter (\x -> n `mod` x == 0) [2..n]))
+        b = product $ filter isPrime $ factors n
+
+totientSeq :: [Integer]
+totientSeq = [ totient i | i <- [0..] ]
 
 factors :: Integral a => a -> [a]
 factors n = [ i | i <- [1..n], n `mod` i == 0 ]
 
--- fix
---factorization :: Integral a => a -> [a]
-factorization n = [7]
+factorization :: Integral a => a -> [(a,a)]
+factorization n = [ (p, power n p) | p <- filter isPrime (factors n) ]
+  where power n p
+          | n `mod` p == 0 = 1 + power (n `quot` p) p
+          | otherwise = 0
 
 isPrime :: Integral a => a -> Bool
 isPrime n = factors n == [1, n]
 
--- fix
---isPrimePower :: Integral a => a -> Bool
---isPrimePower n = 1 == length $ factorization n
+isPrimePower :: Integral a => a -> Bool
+isPrimePower n = 1 == length (filter isPrime (factors n))
